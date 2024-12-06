@@ -1,0 +1,89 @@
+Deuxièmement
+
+Olivier : 
+
+1) Installer les dépendances
+
+npm install mysql
+npm install dotenv
+npm install mysql2
+npm install -g nodemon
+
+
+installer mysql server : 
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.24-1_all.deb
+dpkg -i mysql-apt-config_0.8.32-1_all.deb
+apt update
+apt upgrade
+apt install mysql-server
+rm mysql-apt-config_0.8.32-1_all.deb
+
+
+2) Créer le fichier .env
+
+3) Entrer ces informations dans le fichier .env:
+
+    - l'addresse ip où est stocké la BD (normalement localhost)
+    - le nom de l'utilisateur mysql pour se connecter
+    - le mot de passe de ce user mysql
+    - le nom de la database
+
+    MYSQL_HOST='127.0.0.1'
+    MYSQL_USER='root'
+    MYSQL_PASSWORD='abc-123'
+    MYSQL_DATABASE='plantify'
+
+4) changer le mot de passe de root:
+    
+    a) se connecter par root 
+        mysql -u root -p
+        appuyez sur Entrer
+
+
+    b) changer le mdp :
+    ALTER USER 'root'@'localhost' IDENTIFIED BY 'abc-123';
+    FLUSH PRIVILEGES;
+    EXIT;
+
+
+5) Créer la database 
+
+    a) Se connecter à la database
+        mysql -u root -p
+        abc-123
+
+    b) créer la database 
+        CREATE DATABASE plantify;
+
+    c) Vérifier si la DB a bien été créée
+        SHOW DATABASES;
+
+
+    +--------------------+
+    | Database           |
+    +--------------------+
+    | information_schema |
+    | mysql              |
+    | performance_schema |
+    | plantify           |
+    | sys                |
+    +--------------------+
+
+
+6) créer les différentes tables en copiant et collant le scrpit de BDS
+                
+7) Créer la connection entre js et le backend
+
+dotenv.config();
+
+const pool = mysql.createPool({
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+}).promise();
+
+8) changer la méthode de connection de la database pour ceci :
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'abc-123';
+
+9) Créer les fonctions du backend vers mysql

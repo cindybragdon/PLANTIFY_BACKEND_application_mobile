@@ -1,0 +1,36 @@
+Partie 3: Express 
+
+1) installer express et cors
+npm i express
+npm i cors
+npm install jsonwebtoken
+
+
+2) Créer app 
+
+const app = express();
+
+//Cors est nécéssaire pour qu'un backend communique avec un front end
+app.use(cors());
+
+//express crée des routes et crée un serveur
+app.use(express.json())
+
+
+3)créer le serveur et un error middleware
+
+// Lorsqu'une erreur se produit dans l'application (par exemple, une exception non gérée), Express appelle automatiquement
+// ce middleware d'erreur avec l'objet d'erreur (err), ce qui permet de la gérer de manière centralisée et uniforme.
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+})
+
+// Lance le serveur et lui indique quel port utiliser 
+app.listen(8080, () => {
+    console.log('Server is runnig on port 8080')
+})
+
+4) créer les différentes routes
+
+5) créer les jwt
