@@ -6,6 +6,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+console.log('MYSQL_USER:', process.env.MYSQL_USER);
+console.log('MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD);
+
 const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,

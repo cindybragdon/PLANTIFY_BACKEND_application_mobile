@@ -4,18 +4,17 @@ USE plantify;
 
 CREATE TABLE user (
     userid INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
+    username VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(12) NOT NULL,
-    location VARCHAR(100) NOT NULL, 
+    location VARCHAR(100), 
     image_user LONGBLOB
 );
 
-INSERT INTO user (nom, prenom, email, location, password) VALUES
-('Wheat', 'Mini', 'miniwheat@example.com', 'Montreal', 'cestReal'),
-('Pac', '2', '2pac@example.com', 'Marseille','imdead'),
-('Dogg', 'Snoop', 'snoopdogg@example.com', 'Lyon', 'blazeit420');
+INSERT INTO user (username, email, location, password) VALUES
+('MiniWheat', 'miniwheat@example.com', 'Montreal', 'cestReal'),
+('PAC2', '2pac@example.com', 'Marseille','imdead'),
+('SnoopyDoggy', 'snoopdogg@example.com', 'Lyon', 'blazeit420');
 
 CREATE TABLE myplant (
     id INT AUTO_INCREMENT PRIMARY KEY,

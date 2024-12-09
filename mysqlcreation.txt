@@ -86,4 +86,13 @@ const pool = mysql.createPool({
 8) changer la méthode de connection de la database pour ceci :
 ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'abc-123';
 
+
 9) Créer les fonctions du backend vers mysql
+
+
+
+si mysql bug : 
+
+systemctl restart mysql
+TESTER LES FICHIERS À PARTIR DE root
+node ./Service/backendUser,js

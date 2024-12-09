@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './Service/backendUser';
+import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './Service/backendUser.js';
 
 
 const SECRET_KEY = 'Snooopy_DOggy-dawg';
@@ -16,7 +16,7 @@ app.use(express.json())
 
 
 
-app.post("/users/signin", async (req, res) => {
+app.post("/user/signin", async (req, res) => {
     const { email, password } = req.body;
     console.log("Post : users/signin")
 
@@ -29,7 +29,6 @@ app.post("/users/signin", async (req, res) => {
         // Modify the user retrieval function to accept either username or email
         console.log(`End point request with user/email : ${usernameOrEmail} and pass : ${password}`)
 
-        console.log(`hello`)
 
         const user = await getUserByEmailAndPassword(email, password);
         console.log(`Found user : ${user}`)
@@ -40,8 +39,7 @@ app.post("/users/signin", async (req, res) => {
         const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
         res.status(200).json({
             userid: user.userid,
-            nom: user.nom,
-            prenom:user.prenom,
+            username: user.username,
             email: user.email,
             location: user.location,
             image_user: user.image_user,
@@ -55,12 +53,12 @@ app.post("/users/signin", async (req, res) => {
 });
 
 
-app.post("/users", async (req, res) => {
-    const { nom, prenom, email, password } = req.body;
+app.post("/user", async (req, res) => {
+    const {email, password } = req.body;
 
     // Check for missing fields
-    if (!nom || !prenom ||  !email || !password) {
-        return res.status(400).json({ error: "nom, prenom, email, and password are required." });
+    if (!email || !password) {
+        return res.status(400).json({ error: "email, and password are required." });
     }
 
     try {
@@ -71,14 +69,13 @@ app.post("/users", async (req, res) => {
         }
 
         // Proceed to create the user
-        const newUser = await createUser( nom, prenom, email, password );
+        const newUser = await createUser(email, password );
         const token = jwt.sign({ userId:newUser.id }, SECRET_KEY, { expiresIn: '1h' });
         console.log(token)
         // Return the newly created user information
         res.status(201).json({
             userId: newUser.userId,
-            nom: newUser.nom,
-            prenom: newUser.prenom,
+            username: newUser.username,
             email: newUser.email,
             token
             
@@ -90,8 +87,8 @@ app.post("/users", async (req, res) => {
 });
 
 
-
-app.get("/users/:id", async (req, res) => {
+/*
+app.get("/user/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
@@ -134,17 +131,17 @@ app.get("/users/:id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+*/
 
-
-app.put("/users/:id", async (req, res) => {
+app.put("/user/:id", async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(403).send('Forbidden');
     const userId = req.params.id; 
 
     const userData  = req.body;
 
-    if(!userData || userId != userData?.id){
-        return res.status(409).json({ error: "Request missing userData" });
+    if(!userData || userId != userData?.userId){
+        return res.status(400).json({ error: "Request missing userData" });
 
     }
     // Verify the token
@@ -154,11 +151,11 @@ app.put("/users/:id", async (req, res) => {
     }
     
     if (decoded.userId != userId) {
-        return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
+        return res.status(403).json({ error: "Forbidden: you are not allowed to get this info" });
     }
     try {
         // Check for missing fields
-        if (!userData?.id || !userData?.username || !userData?.email || !userData?.profilePic) {
+        if (!userData?.userId || !userData?.username || !userData?.username || !userData?.email || !userData?.password || !userData?.location || !userData?.image_user) {
             return res.status(400).json({ error: "Request body missing parameters" });
         }
 
@@ -177,7 +174,7 @@ app.put("/users/:id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
-app.delete("/users/:id", async (req, res) => {
+app.delete("/user/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
@@ -212,8 +209,8 @@ app.delete("/users/:id", async (req, res) => {
     }
 });
 
-/*
-app.post("/users/authenticate", async (req, res) => {
+
+app.post("/user/authenticate", async (req, res) => {
     
     try {
         const token = req.headers['authorization']?.split(' ')[1];
@@ -222,11 +219,9 @@ app.post("/users/authenticate", async (req, res) => {
         // Verify the token
         const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
         if (!decoded?.userId) {
-            return res.status(409).json({ error: "Forbidden: badToken" });
+            return res.status(401).json({ error: "Forbidden: badToken" });
         }
 
-    
-        
         res.status(200).json({
             id: decoded.userId,
         });
@@ -235,7 +230,7 @@ app.post("/users/authenticate", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
-*/
+
 
 
 // Lorsqu'une erreur se produit dans l'application (par exemple, une exception non gérée), Express appelle automatiquement
