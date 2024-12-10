@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './Service/backendUser.js';
+import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './service/backendUser.js';
+import { getAllPlantDictionnary } from './service/backendPlantDictionnairy.js';
+//import { fetchData } from './fetchData.js';
 
 
 const SECRET_KEY = 'Snooopy_DOggy-dawg';
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.json())
 
 
+// -----------------------------------------         USER         ----------------------------------------------
 
 app.post("/user/signin", async (req, res) => {
     const { email, password } = req.body;
@@ -233,6 +236,54 @@ app.post("/user/authenticate", async (req, res) => {
 
 
 
+// -----------------------------------------             MY PLANTS             ----------------------------------------------
+
+
+
+
+
+
+
+
+// -----------------------------------------         PLANT DICTIONNARY         ----------------------------------------------
+
+app.get("/plantDictionnary", async (req, res) => {
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) return res.status(403).send('Forbidden');
+        
+        const userId = req.params.id; 
+
+        // Check for missing fields
+        if (!userId) {
+            return res.status(400).json({ error: "Request missing parameters" });
+        }
+
+        // Verify the token
+        const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+        if (!decoded?.userId) {
+            return res.status(401).json({ error: "Forbidden: badToken" });
+        }
+    
+
+        // get user data
+        const plantsDictionnary = await getAllPlantDictionnary();
+        if (!plantsDictionnary) {
+            return res.status(404).json({ error: `Aucun plantDictionnary`});
+        }
+
+        // Return the information
+        res.status(200).json({plantsDictionnary:plantsDictionnary});
+    } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).send('Invalid token'); // Handle JWT-specific errors
+        }
+        console.error('Error fetching profile Data: ', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+
 // Lorsqu'une erreur se produit dans l'application (par exemple, une exception non gérée), Express appelle automatiquement
 // ce middleware d'erreur avec l'objet d'erreur (err), ce qui permet de la gérer de manière centralisée et uniforme.
 app.use((err, req, res, next) => {
@@ -242,5 +293,6 @@ app.use((err, req, res, next) => {
 
 // Lance le serveur et lui indique quel port utiliser 
 app.listen(8080, () => {
-    console.log('Server is runnig on port 8080')
+    console.log('Server is runnig on port 8080');
+    //fetchData();
 })

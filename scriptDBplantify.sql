@@ -36,9 +36,8 @@ CREATE TABLE plantdictionnary (
     id INT AUTO_INCREMENT PRIMARY KEY,
     plant_name VARCHAR(100) NOT NULL,
     plant_type VARCHAR(100) NOT NULL,
-    watering_frequency VARCHAR(25) NOT NULL,
+    watering_frequency INT(2) NOT NULL,
     depth_water_requirement VARCHAR(25) NOT NULL,
-    watering_period ENUM('morning', 'afternoon', 'evening') NOT NULL,
     poisonous_to_humans BOOLEAN NOT NULL DEFAULT FALSE,
     poisonous_to_pets BOOLEAN NOT NULL DEFAULT FALSE,
     intolerant_to_cold BOOLEAN NOT NULL DEFAULT FALSE, 
@@ -51,16 +50,15 @@ INSERT INTO plantdictionnary (
     plant_type, 
     watering_frequency, 
     depth_water_requirement, 
-    watering_period, 
     poisonous_to_humans, 
     poisonous_to_pets, 
     intolerant_to_cold, 
     image_plant, 
     indoor
 ) VALUES 
-('Aloe Vera', 'Succulent', 'Weekly', '50 mm', 'morning', FALSE, TRUE, FALSE, NULL, TRUE),
-('Snake Plant', 'Evergreen', 'Bi-Weekly', '10 mm', 'afternoon', FALSE, FALSE, TRUE, NULL, TRUE),
-('Peace Lily', 'Flowering Plant', 'Twice a Week', '20 mm', 'evening', TRUE, TRUE, TRUE, NULL, TRUE);
+('Aloe Vera', 'Succulent', 1, '50 mm', FALSE, TRUE, FALSE, NULL, TRUE),
+('Snake Plant', 'Evergreen', 2, '10 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Peace Lily', 'Flowering Plant', 3, '20 mm', TRUE, TRUE, TRUE, NULL, TRUE);
 
 
 
@@ -75,7 +73,7 @@ ADD CONSTRAINT fk_myplant_userId
 FOREIGN KEY (userId) REFERENCES user(userId)
 ON DELETE CASCADE;
 
-
+/*
 CREATE TABLE meteo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     location VARCHAR(100) NOT NULL,
@@ -94,7 +92,7 @@ INSERT INTO meteo (location, date, temperature_min, temperature_max, precipitati
 ('Lyon', '2024-12-01', -1.0, 8.0, 2.0, 'Rain', 5.5, 90),
 ('Paris', '2024-12-02', 0.0, 7.0, 0.0, 'Sunny', 6.0, 80),
 ('Marseille', '2024-12-02', 5.0, 14.0, 0.0, 'Clear', 12.0, 65);
-
+*/
 -- Exemples de SELECT pour les fonctionnalités
 
 -- 1. Alerte en cas de gel

@@ -1,0 +1,5 @@
+tests app.js
+
+1) Installer l'extension thunderclient
+
+2) Tester les routes avec thunderclient
