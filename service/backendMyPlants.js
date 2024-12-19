@@ -23,7 +23,7 @@ export async function createMyPlant(name, type, age, location, userId){
 export async function updateMyPlant(myPlantData){
     
 
-    console.log(`Database : update myplant with myPlant.id : ${myPlantData.id}`)
+    console.log(`Database : update myplant with myPlant.id : ${myPlantData.id}`);
 
     const [rows] = await pool.query(`   UPDATE myplant
                                         SET 
@@ -40,15 +40,15 @@ export async function updateMyPlant(myPlantData){
                                             myPlantData.image_myplant,
                                             myPlantData.id
                                         ]);
-    return true
+    return true;
 }
 
 export async function deleteMyPlantById(id){
 
-    console.log(`Database : delete myPlant with id : ${id}`)
+    console.log(`Database : delete myPlant with id : ${id}`);
     
-    const status = await pool.query(`DELETE FROM myplant WHERE id = ?;`,[id])
-    return status[0].affectedRows
+    const status = await pool.query(`DELETE FROM myplant WHERE id = ?;`,[id]);
+    return status[0].affectedRows;
 }
 
 
