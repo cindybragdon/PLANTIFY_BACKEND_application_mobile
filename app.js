@@ -22,7 +22,8 @@ app.use(express.json())
 
 app.post("/user/login", async (req, res) => {
     const { email, password } = req.body;
-    console.log("Post : users/login")
+    console.log("Post : user/login")
+
 
     // Check if username or email and password are provided
     if (!email || !password) {
@@ -31,7 +32,7 @@ app.post("/user/login", async (req, res) => {
 
     try {
         // Modify the user retrieval function to accept either username or email
-        console.log(`End point request with user/email : ${usernameOrEmail} and pass : ${password}`)
+        console.log(`End point request with user/email : ${email} and pass : ${password}`)
 
 
         const user = await getUserByEmailAndPassword(email, password);
