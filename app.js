@@ -3,7 +3,7 @@ import cors from 'cors'
 import jwt from 'jsonwebtoken';
 import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './service/backendUser.js';
 import { getAllPlantDictionnary } from './service/backendPlantDictionnairy.js';
-import { createMyPlant, getPlantsByUserId } from './service/backendMyPlants.js';
+import { createMyPlant, getPlantsByUserId, updateMyPlant } from './service/backendMyPlants.js';
 //import { fetchData } from './fetchData.js';
 
 
@@ -269,7 +269,7 @@ app.get("/myPlant/:id", async (req, res) => {
         if (error instanceof jwt.JsonWebTokenError) {
             return res.status(401).send('Invalid token'); // Handle JWT-specific errors
         }
-        console.error('Error fetching profile Data: ', error);
+        console.error('Error fetching myplants Data by userID: ', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
@@ -277,7 +277,6 @@ app.get("/myPlant/:id", async (req, res) => {
 
 app.post("/myPlant", async (req, res) => {
     const {name, type, age, location} = req.body;
-
 
     try {
         // Check for missing fields
@@ -301,22 +300,63 @@ app.post("/myPlant", async (req, res) => {
         }
 
         // Check if the username or email already exists
-        const newMyPlant = await createMyPlant();
+        const newMyPlant = await createMyPlant(name, type, age, location, userId);
 
         // Return the newly created user information
         res.status(201).json({
-            userId: newUser.userId,
-            username: newUser.username,
-            email: newUser.email,
-            token
-            
+            name: newMyPlant.name,
+            type: newMyPlant.type,
+            age: newMyPlant.age,
+            location: newMyPlant.location,
+            userId: newMyPlant.userId        
         });
     } catch (error) {
-        console.error('Error during signup: ', error);
+        console.error('Error during myplant creation: ', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
 
+
+app.put("/myPlant/:id", async (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(403).send('Forbidden');
+    const userId = req.params.id; 
+
+    const myPlantData  = req.body;
+
+    if(!myPlantData){
+        return res.status(400).json({ error: "Request missing userData" });
+    }
+    // Verify the token
+    const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+    if (!decoded?.userId) {
+        return res.status(401).json({ error: "Forbidden: badToken" });
+    }
+    
+    if (decoded.userId != userId) {
+        return res.status(403).json({ error: "Forbidden: you are not allowed to modify this plant" });
+    }
+    try {
+        // Check for missing fields
+        if (!myPlantData?.id || !myPlantData?.myplant_name || !myPlantData?.myplant_type || !myPlantData?.myplant_age || !myPlantData?.myplant_location || !myPlantData?.image_myplant) {
+            return res.status(400).json({ error: "Request body missing parameters" });
+        }
+
+        // alter user data
+        const updatedMyPlant = await updateMyPlant(myPlantData);
+        if (!updatedMyPlant) {
+            return res.status(404).json({ error: `Error while updating data`});
+        }
+
+        // Return the information
+        res.status(200).json({
+            message:"Success"
+        });
+    } catch (error) {
+        console.error('Error updating profile Data: ', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
 
 
 // -----------------------------------------         PLANT DICTIONNARY         ----------------------------------------------
@@ -344,7 +384,7 @@ app.get("/plantDictionnary", async (req, res) => {
         if (error instanceof jwt.JsonWebTokenError) {
             return res.status(401).send('Invalid token'); // Handle JWT-specific errors
         }
-        console.error('Error fetching profile Data: ', error);
+        console.error('Error fetching profile the plant dictionnary: ', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
