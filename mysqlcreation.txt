@@ -7,11 +7,12 @@ Olivier :
 npm install mysql
 npm install dotenv
 npm install mysql2
-npm install -g nodemon
+npm install nodemon
 
 
 installer mysql server : 
-wget https://dev.mysql.com/get/mysql-apt-config_0.8.24-1_all.deb
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.32-1_all.deb
+apt-get install lsb-release
 dpkg -i mysql-apt-config_0.8.32-1_all.deb
 apt update
 apt upgrade
@@ -95,4 +96,4 @@ si mysql bug :
 
 systemctl restart mysql
 TESTER LES FICHIERS À PARTIR DE root
-node ./Service/backendUser,js
+node ./Service/backendUser.js
