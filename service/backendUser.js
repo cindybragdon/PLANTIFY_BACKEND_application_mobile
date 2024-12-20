@@ -31,23 +31,21 @@ export async function createUser(username, email, password){
 export async function updateUser(userData){
     
 
-    console.log(`Database : update user with user.userid : ${userData.userid}`)
+    console.log(`Database : update user with user.userId : ${userData.userId}`)
 
     const status = await pool.query(`   UPDATE user
                                         SET 
                                             username = ?,
-                                            email = ?,
                                             password = ?,
                                             location = ?,
                                             image_user = ?
 
                                         WHERE userid = ?;`,[
                                             userData.username,
-                                            userData.email,
                                             userData.password,
                                             userData.location,
                                             userData.image_user,
-                                            userData.userid
+                                            userData.userId
                                         ]);
     return status[0].affectedRows;
 }

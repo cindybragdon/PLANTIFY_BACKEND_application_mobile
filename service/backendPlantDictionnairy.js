@@ -9,6 +9,14 @@ export async function getAllPlantDictionnary(){
     return rows;
 }
 
+
+export async function getPlantDictionnaryByType(plant_type){
+    
+    console.log(`Database : get plantDictionnary by type`);
+    const [rows] = await pool.query(`SELECT * FROM plantdictionnary WHERE plant_type=?`,[plant_type]);
+    return rows[0];
+}
+
 export async function createPlantDictionnary(plant_name, plant_type, watering_frequency, depth_water_requirement, poisonous_to_humans, poisonous_to_pets, intolerant_to_cold, image_plant, indoor){
     
     console.log(`Database : creating plant dictionnary with plant_name: ${plant_name}, 

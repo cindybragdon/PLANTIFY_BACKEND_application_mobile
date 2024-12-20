@@ -10,6 +10,14 @@ export async function getPlantsByUserId(userId) {
     return userPlants;
 } 
 
+export async function getPlantsByPlantId(id) {
+    
+    console.log(`Database : get user plants with id : ${id}`)
+    
+    const [userPlants] = await pool.query(`SELECT * FROM myplant WHERE id=?;`,[id]);
+    return userPlants;
+} 
+
 export async function createMyPlant(name, type, age, location, userId){
     
     console.log(`Database : creating myPlant with name: ${name}, type: ${type}, age: ${age}, location: ${location} and userId : ${userId}`)

@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword } from './service/backendUser.js';
-import { getAllPlantDictionnary } from './service/backendPlantDictionnairy.js';
-import { createMyPlant, getPlantsByUserId, updateMyPlant } from './service/backendMyPlants.js';
+import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword, updateUser } from './service/backendUser.js';
+import { getAllPlantDictionnary, getPlantDictionnaryByType } from './service/backendPlantDictionnairy.js';
+import { createMyPlant, getPlantsByPlantId, getPlantsByUserId, updateMyPlant } from './service/backendMyPlants.js';
 //import { fetchData } from './fetchData.js';
 
 
@@ -19,7 +19,7 @@ app.use(express.json())
 
 
 // -----------------------------------------         USER         ----------------------------------------------
-
+//VÉRIFIÉ POSTMAN
 app.post("/user/login", async (req, res) => {
     const { email, password } = req.body;
     console.log("Post : user/login")
@@ -40,10 +40,11 @@ app.post("/user/login", async (req, res) => {
         if (!user) {
             return res.status(401).json({ error: "Invalid username/email or password." });
         }
-        const userId = user.id
+        const userId = user.userid
+        console.log("userid : ", userId)
         const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
         res.status(200).json({
-            userid: user.userid,
+            userId: user.userid,
             username: user.username,
             email: user.email,
             location: user.location,
@@ -57,7 +58,7 @@ app.post("/user/login", async (req, res) => {
     }
 });
 
-
+//VÉRIFIÉ POSTMAN
 app.post("/user", async (req, res) => {
     const {username, email, password } = req.body;
 
@@ -75,7 +76,8 @@ app.post("/user", async (req, res) => {
 
         // Proceed to create the user
         const newUser = await createUser(username, email, password);
-        const token = jwt.sign({ userId:newUser.id }, SECRET_KEY, { expiresIn: '1h' });
+        console.log(newUser)
+        const token = jwt.sign({ userId:newUser.userId }, SECRET_KEY, { expiresIn: '1h' });
         console.log(token)
         // Return the newly created user information
         res.status(201).json({
@@ -138,34 +140,38 @@ app.get("/user/:id", async (req, res) => {
 });
 */
 
+//VÉRIFIÉ POSTMAN
 app.put("/user/:id", async (req, res) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(403).send('Forbidden');
-    const userId = req.params.id; 
 
-    const userData  = req.body;
-
-    if(!userData || userId != userData?.userId){
-        return res.status(400).json({ error: "Request missing userData" });
-
-    }
-    // Verify the token
-    const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
-    if (!decoded?.userId) {
-        return res.status(401).json({ error: "Forbidden: badToken" });
-    }
-    
-    if (decoded.userId != userId) {
-        return res.status(403).json({ error: "Forbidden: you are not allowed to get this info" });
-    }
     try {
+
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) return res.status(403).send('Forbidden');
+        const userId = req.params.id; 
+    
+        const userData  = req.body;
+    
+        if(!userData || userId != userData?.userId){
+            return res.status(400).json({ error: "Request missing userData" });
+    
+        }
+        // Verify the token
+        const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+        if (!decoded?.userId) {
+            return res.status(401).json({ error: "Forbidden: badToken" });
+        }
+        
+        if (decoded.userId != userId) {
+            return res.status(403).json({ error: "Forbidden: you are not allowed to get this info" });
+        }
+
         // Check for missing fields
-        if (!userData?.userId || !userData?.username || !userData?.email || !userData?.password || !userData?.location || !userData?.image_user) {
+        if (!userData?.userId || !userData?.username || !userData?.password ) {
             return res.status(400).json({ error: "Request body missing parameters" });
         }
 
         // alter user data
-        const user = await updateUserProfile(userData);
+        const user = await updateUser(userData);
         if (!user) {
             return res.status(404).json({ error: `Error while updating data`});
         }
@@ -180,7 +186,7 @@ app.put("/user/:id", async (req, res) => {
     }
 });
 
-
+//VÉRIFIÉ POSTMAN
 app.delete("/user/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
@@ -242,6 +248,8 @@ app.post("/user/authenticate", async (req, res) => {
 
 // -----------------------------------------             MY PLANTS             ----------------------------------------------
 
+
+//VÉRIFIÉ POSTMAN
 app.get("/myPlant/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
@@ -275,21 +283,27 @@ app.get("/myPlant/:id", async (req, res) => {
     }
 });
 
-
+//VÉRIFIÉ POSTMAN
 app.post("/myPlant", async (req, res) => {
-    const {name, type, age, location} = req.body;
+    const {name, type, age, location, userId} = req.body;
 
     try {
-        // Check for missing fields
-        if (!name || !type || !age || !location || !userId) {
-            return res.status(400).json({ error: "username, email and password are required." });
-        }
 
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
         
-        const userId = req.params.id; 
         
+        // Check for missing fields
+        if (!name || !type || !userId) {
+            return res.status(400).json({ error: "name, type, age, location and userId are required." });
+        }
+
+        //Verify if the age or location are filled.
+        //If not, put some default values
+        const finalAge = age ||  0;
+        const finalLocation = location || 'unknown';
+
+
         // Verify the token
         const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
         if (!decoded?.userId) {
@@ -300,15 +314,20 @@ app.post("/myPlant", async (req, res) => {
             return res.status(403).json({ error: "Forbidden: you are not allowed to to create a plant for this user" });
         }
 
+        const existingPlantType = await getPlantDictionnaryByType(type);
+        if (!existingPlantType) {
+            return res.status(400).json({ error: `the plant type ${type} doesn't exist` });
+        }
+
         // Check if the username or email already exists
-        const newMyPlant = await createMyPlant(name, type, age, location, userId);
+        const newMyPlant = await createMyPlant(name, type, finalAge, finalLocation, userId);
 
         // Return the newly created user information
         res.status(201).json({
-            name: newMyPlant.name,
-            type: newMyPlant.type,
-            age: newMyPlant.age,
-            location: newMyPlant.location,
+            name: newMyPlant.myplant_name,
+            type: newMyPlant.myplant_type,
+            age: newMyPlant.myplant_age,
+            location: newMyPlant.myplant_location,
             userId: newMyPlant.userId        
         });
     } catch (error) {
@@ -317,30 +336,43 @@ app.post("/myPlant", async (req, res) => {
     }
 });
 
-
+//NOT VERIFIED
 app.put("/myPlant/:id", async (req, res) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(403).send('Forbidden');
-    const userId = req.params.id; 
 
-    const myPlantData  = req.body;
-
-    if(!myPlantData){
-        return res.status(400).json({ error: "Request missing userData" });
-    }
-    // Verify the token
-    const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
-    if (!decoded?.userId) {
-        return res.status(401).json({ error: "Forbidden: badToken" });
-    }
-    
-    if (decoded.userId != userId) {
-        return res.status(403).json({ error: "Forbidden: you are not allowed to modify this plant" });
-    }
     try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) return res.status(403).send('Forbidden');
+        const id = req.params.id;
+    
+        const myPlantData  = req.body;
+    
+        if(!myPlantData){
+            return res.status(400).json({ error: "Request missing userData" });
+        }
+        // Verify the token
+        const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+        if (!decoded?.userId) {
+            return res.status(401).json({ error: "Forbidden: badToken" });
+        }
+        
+        const existingMyPlant = await getPlantsByPlantId(id);
+        if (!existingMyPlant) {
+            return res.status(404).json({ error: `the plant with id ${id} doesn't exist`});
+        }
+
+        if (decoded.userId != existingMyPlant.userId) {
+            return res.status(403).json({ error: "Forbidden: you are not allowed to modify this plant" });
+        }
+        //const userId = myPlantData?.userId = existingMyPlant.userId;
+
         // Check for missing fields
-        if (!myPlantData?.id || !myPlantData?.myplant_name || !myPlantData?.myplant_type || !myPlantData?.myplant_age || !myPlantData?.myplant_location || !myPlantData?.image_myplant) {
+        if (!myPlantData?.userId || !myPlantData?.myplant_name || !myPlantData?.myplant_type || !myPlantData?.myplant_age || !myPlantData?.myplant_location || !myPlantData?.image_myplant) {
             return res.status(400).json({ error: "Request body missing parameters" });
+        }
+
+        const existingPlantType = await getPlantDictionnaryByType(myPlantData?.myplant_type);
+        if (!existingPlantType) {
+            return res.status(400).json({ error: `the plant type ${myPlantData?.myplant_type} doesn't exist` });
         }
 
         // alter user data
@@ -361,7 +393,7 @@ app.put("/myPlant/:id", async (req, res) => {
 
 
 // -----------------------------------------         PLANT DICTIONNARY         ----------------------------------------------
-
+//VÉRIFIÉ POSTMAN
 app.get("/plantDictionnary", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
