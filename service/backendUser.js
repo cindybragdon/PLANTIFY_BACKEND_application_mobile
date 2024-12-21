@@ -10,6 +10,14 @@ export async function getUserByEmailAndPassword(email, password) {
     return users[0];
 } 
 
+export async function getUserById(userId) {
+    
+    console.log(`Database : get user with userid : ${userId}`);
+    
+    const [users] = await pool.query(`SELECT * FROM user WHERE userId=?;`,[userId]);
+    return users[0];
+} 
+
 
 export async function getUserByEmail(email) {
     

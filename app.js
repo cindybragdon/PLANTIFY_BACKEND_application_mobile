@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors'
 import jwt from 'jsonwebtoken';
-import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword, updateUser } from './service/backendUser.js';
+import { createUser, deleteUserById, getUserByEmail, getUserByEmailAndPassword, getUserById, updateUser } from './service/backendUser.js';
 import { getAllPlantDictionnary, getPlantDictionnaryByType } from './service/backendPlantDictionnairy.js';
 import { createMyPlant, getPlantsByPlantId, getPlantsByUserId, updateMyPlant } from './service/backendMyPlants.js';
 //import { fetchData } from './fetchData.js';
@@ -94,7 +94,7 @@ app.post("/user", async (req, res) => {
 });
 
 
-/*
+
 app.get("/user/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
@@ -138,7 +138,7 @@ app.get("/user/:id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
-*/
+
 
 //VÉRIFIÉ POSTMAN
 app.put("/user/:id", async (req, res) => {
