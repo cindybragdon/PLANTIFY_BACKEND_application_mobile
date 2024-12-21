@@ -15,7 +15,7 @@ export async function getPlantsByPlantId(id) {
     console.log(`Database : get user plants with id : ${id}`)
     
     const [userPlants] = await pool.query(`SELECT * FROM myplant WHERE id=?;`,[id]);
-    return userPlants;
+    return userPlants[0];
 } 
 
 export async function createMyPlant(name, type, age, location, userId){
@@ -39,13 +39,17 @@ export async function updateMyPlant(myPlantData){
                                             myplant_type = ?,
                                             myplant_age = ?,
                                             myplant_location = ?,
-                                            image_myplant = ?
+                                            image_myplant = ?,
+                                            last_watering_time = ?,
+                                            watering_interval = ?
 
                                         WHERE id = ?;`,[myPlantData.myplant_name,
                                             myPlantData.myplant_type,
                                             myPlantData.myplant_age,
                                             myPlantData.myplant_location,
                                             myPlantData.image_myplant,
+                                            myPlantData.last_watering_time,
+                                            myPlantData.watering_interval,
                                             myPlantData.id
                                         ]);
     return true;

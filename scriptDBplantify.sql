@@ -56,12 +56,26 @@ INSERT INTO plantdictionnary (
     image_plant, 
     indoor
 ) VALUES 
-('Aloe Vera', 'Succulent', 1, '50 mm', FALSE, TRUE, FALSE, NULL, TRUE),
-('Snake Plant', 'Evergreen', 2, '10 mm', FALSE, FALSE, TRUE, NULL, TRUE),
-('Peace Lily', 'Flowering Plant', 3, '20 mm', TRUE, TRUE, TRUE, NULL, TRUE);
+('Lucky Bamboo', 'Bambou', 1,'20 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Christmas Cactus', 'Cactus', 2, '15 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('Aloe Vera', 'Aloès', 1, '10 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Swiss Cheese Plant', 'Monstera', 2, '20 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('Golden Pothos', 'Pothos', 2, '40 mm', TRUE, TRUE, TRUE, NULL, TRUE),
+('Peace Lily', 'Lys de la paix', 3, '10 mm', TRUE, TRUE, TRUE, NULL, TRUE),
+('Spider Plant', 'Araignée', 2, '15 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Chinese Evergreen', 'Aglaonema', 2,'30 mm', TRUE, TRUE, TRUE, NULL, TRUE),
+('Rubber Tree', 'Figuier élastique', 1, '40 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('Jade Plant', 'Plante de jade', 2, '15 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('Boston Fern', 'Fougère de Boston', 1, '40 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Snake Plant', 'Langue de belle-mère', 1, '10 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('Calathea Orbifolia', 'Calathée', 3, '20 mm', FALSE, FALSE, TRUE, NULL, TRUE),
+('Bird of Paradise', 'Oiseau de paradis', 3, '25 mm', FALSE, TRUE, TRUE, NULL, TRUE),
+('ZZ Plant', 'Zamioculcas', 2, '20 mm', FALSE, TRUE, TRUE, NULL, TRUE);
 
 
-
+ALTER TABLE myplant
+ADD COLUMN last_watering_time DATETIME DEFAULT NULL,
+ADD COLUMN watering_interval INT DEFAULT NULL;
 
 ALTER TABLE myplant
 ADD CONSTRAINT fk_myplant_type

@@ -346,7 +346,7 @@ app.put("/myPlant/:id", async (req, res) => {
     
         const myPlantData  = req.body;
     
-        if(!myPlantData){
+        if(!myPlantData || id != myPlantData?.id){
             return res.status(400).json({ error: "Request missing userData" });
         }
         // Verify the token
@@ -354,7 +354,7 @@ app.put("/myPlant/:id", async (req, res) => {
         if (!decoded?.userId) {
             return res.status(401).json({ error: "Forbidden: badToken" });
         }
-        
+
         const existingMyPlant = await getPlantsByPlantId(id);
         if (!existingMyPlant) {
             return res.status(404).json({ error: `the plant with id ${id} doesn't exist`});
@@ -366,7 +366,8 @@ app.put("/myPlant/:id", async (req, res) => {
         //const userId = myPlantData?.userId = existingMyPlant.userId;
 
         // Check for missing fields
-        if (!myPlantData?.userId || !myPlantData?.myplant_name || !myPlantData?.myplant_type || !myPlantData?.myplant_age || !myPlantData?.myplant_location || !myPlantData?.image_myplant) {
+        console.log(myPlantData)
+        if (!myPlantData?.id || !myPlantData?.myplant_name || !myPlantData?.myplant_type || !myPlantData?.myplant_age || !myPlantData?.myplant_location) {
             return res.status(400).json({ error: "Request body missing parameters" });
         }
 
@@ -390,6 +391,8 @@ app.put("/myPlant/:id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+
+
 
 
 // -----------------------------------------         PLANT DICTIONNARY         ----------------------------------------------
