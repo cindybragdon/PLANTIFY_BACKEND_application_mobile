@@ -258,8 +258,9 @@ app.post("/user/authenticate", async (req, res) => {
 
 
 //VÉRIFIÉ POSTMAN
-app.get("/myPlant/:id", async (req, res) => {
+app.get('/myPlant/:id', async (req, res) => {
     try {
+        console.log("burger 263");
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
         
@@ -271,7 +272,11 @@ app.get("/myPlant/:id", async (req, res) => {
             return res.status(401).json({ error: "Unauthorized: Invalid token" });
         }
         
+        console.log("app.js ligne 274 decoded.userId = ", decoded.userId)
+        console.log("app.js ligne 275 userId = ", userId)
+
         if (decoded.userId != userId) {
+            console.log("erreur ligne 279");
             return res.status(403).json({ error: "Forbidden: you are not allowed to to get the plants of this user" });
         }
         // get myPlants of user
