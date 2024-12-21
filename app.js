@@ -44,11 +44,14 @@ app.post("/user/login", async (req, res) => {
         console.log("userid : ", userId)
         const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
         res.status(200).json({
-            userId: user.userid,
-            username: user.username,
-            email: user.email,
-            location: user.location,
-            image_user: user.image_user,
+            user:{
+                userId: user.userid,
+                username: user.username,
+                email: user.email,
+                location: user.location,
+                image_user: user.image_user
+            },
+
             token
 
         });
@@ -81,9 +84,11 @@ app.post("/user", async (req, res) => {
         console.log(token)
         // Return the newly created user information
         res.status(201).json({
-            userId: newUser.userId,
-            username: newUser.username,
-            email: newUser.email,
+            user:{
+                userId: newUser.userId,
+                username: newUser.username,
+                email: newUser.email
+            },
             token
             
         });
@@ -125,10 +130,13 @@ app.get("/user/:id", async (req, res) => {
 
         // Return the information
         res.status(200).json({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            profilePic: user.profilePic
+            user:{
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                profilePic: user.profilePic
+            }
+
         });
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
